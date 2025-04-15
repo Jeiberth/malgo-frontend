@@ -1,0 +1,1 @@
+import"./axios-Cr2geZcp.js";class i{getBillsUnpaid(){return new Promise(e=>{e()})}payBills(){return new Promise(e=>{e()})}denyTenantApplication(e){return new Promise(n=>{n()})}getPayments(){return new Promise(e=>{e()})}}export{i as t};
