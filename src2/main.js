@@ -5,7 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.css'
 import router from './router'
 import store from './store';
-import { createAdminOnlyDirective } from './directives/adminOnly'
 
 
-createApp(App).directive('admin-only', createAdminOnlyDirective(store)).use(router).use(store).mount('#app')
+createApp(App).use(router).use(store).mount('#app')
