@@ -215,7 +215,7 @@
                     );
                 }
             }).catch(error => {
-                console.log(error);
+                
                 Swal.fire(
                     'Error',
                     'Hubo un error, intenta despues.',
@@ -254,59 +254,60 @@
 
     const properties = ref();
 
-  // Fake Data Generation
-  const generateFakePayments = () => {
-    const payments = [];
-    const statusOptions = ['Confirmado', 'Pendiente'];
-    const paymentMethods = ['Bank Transfer', 'Credit Card', 'Cash', 'PayPal'];
-    const propertySkus = ['FO-APTO-201', 'SE-APTO-301', 'FO-PARQ-1', 'SE-LOC-1'];
-    const billTypes = ['Agua', 'Luz', 'Gas', 'Arriendo'];
+  // // Fake Data Generation
+  // const generateFakePayments = () => {
+  //   const payments = [];
+  //   const statusOptions = ['Confirmado', 'Pendiente'];
+  //   const paymentMethods = ['Bank Transfer', 'Credit Card', 'Cash', 'PayPal'];
+  //   const propertySkus = ['FO-APTO-201', 'SE-APTO-301', 'FO-PARQ-1', 'SE-LOC-1'];
+  //   const billTypes = ['Agua', 'Luz', 'Gas', 'Arriendo'];
 
-    for (let i = 1; i <= 25; i++) {
-      const billCount = Math.floor(Math.random() * 3) + 1;
-      const paymentBills = [];
+  //   for (let i = 1; i <= 25; i++) {
+  //     const billCount = Math.floor(Math.random() * 3) + 1;
+  //     const paymentBills = [];
 
-      for (let j = 0; j < billCount; j++) {
-        paymentBills.push({
-          id: i * 10 + j,
-          payment_id: i,
-          bill_id: i * 10 + j,
-          bills: {
-            id: i * 10 + j,
-            bill_type_id: j + 1,
-            property_id: Math.floor(Math.random() * 4) + 1,
-            start_date: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-01`,
-            end_date: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-28`,
-            due_date: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-15`,
-            amount: (Math.random() * 1000000 + 500000).toFixed(2),
-            status: 'paid',
-            property: {
-              id: Math.floor(Math.random() * 4) + 1,
-              sku: propertySkus[Math.floor(Math.random() * propertySkus.length)]
-            },
-            bill_type: {
-              id: j + 1,
-              name: billTypes[Math.floor(Math.random() * billTypes.length)]
-            }
-          }
-        });
-      }
+  //     for (let j = 0; j < billCount; j++) {
+  //       paymentBills.push({
+  //         id: i * 10 + j,
+  //         payment_id: i,
+  //         bill_id: i * 10 + j,
+  //         bills: {
+  //           id: i * 10 + j,
+  //           bill_type_id: j + 1,
+  //           property_id: Math.floor(Math.random() * 4) + 1,
+  //           start_date: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-01`,
+  //           end_date: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-28`,
+  //           due_date: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-15`,
+  //           amount: (Math.random() * 1000000 + 500000).toFixed(2),
+  //           status: 'paid',
+  //           property: {
+  //             id: Math.floor(Math.random() * 4) + 1,
+  //             sku: propertySkus[Math.floor(Math.random() * propertySkus.length)]
+  //           },
+  //           bill_type: {
+  //             id: j + 1,
+  //             name: billTypes[Math.floor(Math.random() * billTypes.length)]
+  //           }
+  //         }
+  //       });
+  //     }
 
-      payments.push({
-        id: i,
-        amount: paymentBills.reduce((sum, bill) => sum + parseFloat(bill.amount), 0).toFixed(2),
-        payment_method: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
-        status: statusOptions[Math.floor(Math.random() * 2)],
-        payment_cert_url: 'https://imgs.search.brave.com/Hm6ZRHFEIbcM43R0RIdfNrrEhO_mZu9dfcwZbuYR1Uc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLmJs/b2dzLmVzL2U4Yjhi/ZC93aGF0c2FwcC1p/bWFnZS0yMDI1LTAx/LTEzLWF0LTEwLjE2/LjE0LWFtLzQ1MF8x/MDAwLmpwZWc',
-        paid_at: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}T${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}:00`,
-        verified_at: null,
-        payment_has_bills: paymentBills
-      });
-    }
-    return payments;
-  };
+  //     payments.push({
+  //       id: i,
+  //       amount: paymentBills.reduce((sum, bill) => sum + parseFloat(bill.amount), 0).toFixed(2),
+  //       payment_method: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
+  //       status: statusOptions[Math.floor(Math.random() * 2)],
+  //       payment_cert_url: 'https://imgs.search.brave.com/Hm6ZRHFEIbcM43R0RIdfNrrEhO_mZu9dfcwZbuYR1Uc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pLmJs/b2dzLmVzL2U4Yjhi/ZC93aGF0c2FwcC1p/bWFnZS0yMDI1LTAx/LTEzLWF0LTEwLjE2/LjE0LWFtLzQ1MF8x/MDAwLmpwZWc',
+  //       paid_at: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}T${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}:00`,
+  //       verified_at: null,
+  //       payment_has_bills: paymentBills
+  //     });
+  //   }
+  //   return payments;
+  // };
 
-  const payments = ref(generateFakePayments());
+  // const payments = ref(generateFakePayments());
+  const payments = ref();
   const loading = ref(false);
   const verifying = ref(false);
 
@@ -373,7 +374,7 @@
                 );
             }
         }).catch(error => {
-            console.log(error);
+            
             Swal.fire(
                 'Error',
                 'Hubo un error, intenta despues.',

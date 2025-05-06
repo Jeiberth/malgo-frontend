@@ -210,36 +210,38 @@
     const propertySkus = ['FO-APTO-301', 'SE-APTO-201', 'SE-APTO-301', 'FO-PARQ-1'];
 
 
-    const generateFakeContracts = () => {
-        const contracts = [];
-        const statusOptions = ['En curso', 'Terminado'];
-        const names = ['Laura Gómez', 'Carlos Pérez', 'María Rodríguez', 'Andrés López'];
+    // const generateFakeContracts = () => {
+    //     const contracts = [];
+    //     const statusOptions = ['En curso', 'Terminado'];
+    //     const names = ['Laura Gómez', 'Carlos Pérez', 'María Rodríguez', 'Andrés López'];
 
-        for (let i = 1; i <= 25; i++) {
-        contracts.push({
-            id: i,
-            property_id: Math.floor(Math.random() * 4) + 1,
-            user_id: Math.floor(Math.random() * 4) + 1,
-            tenant_application_id: Math.floor(Math.random() * 10) + 1,
-            start_date: `202${Math.floor(Math.random() * 5)}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
-            end_date: `202${Math.floor(Math.random() * 5) + 3}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
-            monthly_amount: (Math.random() * 3000000 + 1000000).toFixed(2),
-            deposit_amount: (Math.random() * 3000000 + 1000000).toFixed(2),
-            status: statusOptions[Math.floor(Math.random() * 2)],
-            created_at: `${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}/${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}/2023`,
-            contract_doc: 'https://pdfobject.com/pdf/sample.pdf',
-            property: {
-                sku: propertySkus[Math.floor(Math.random() * propertySkus.length)],
-            },
-            user: {
-            name: names[Math.floor(Math.random() * names.length)]
-            }
-        });
-        }
-        return contracts;
-    };
+    //     for (let i = 1; i <= 25; i++) {
+    //     contracts.push({
+    //         id: i,
+    //         property_id: Math.floor(Math.random() * 4) + 1,
+    //         user_id: Math.floor(Math.random() * 4) + 1,
+    //         tenant_application_id: Math.floor(Math.random() * 10) + 1,
+    //         start_date: `202${Math.floor(Math.random() * 5)}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+    //         end_date: `202${Math.floor(Math.random() * 5) + 3}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+    //         monthly_amount: (Math.random() * 3000000 + 1000000).toFixed(2),
+    //         deposit_amount: (Math.random() * 3000000 + 1000000).toFixed(2),
+    //         status: statusOptions[Math.floor(Math.random() * 2)],
+    //         created_at: `${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}/${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}/2023`,
+    //         contract_doc: 'https://pdfobject.com/pdf/sample.pdf',
+    //         property: {
+    //             sku: propertySkus[Math.floor(Math.random() * propertySkus.length)],
+    //         },
+    //         user: {
+    //         name: names[Math.floor(Math.random() * names.length)]
+    //         }
+    //     });
+    //     }
+    //     return contracts;
+    // };
 
-    const contracts = ref(generateFakeContracts());
+    // const contracts = ref(generateFakeContracts());
+    const contracts = ref();
+
     const properties = ref([{ id: 1, sku: 'a' }]);
 
     const tenantApplications = ref(Array.from({ length: 10 }, (_, i) => ({
@@ -263,7 +265,6 @@
                     if(response && response.success){
                         store.commit('setProperties', response.data)
                         properties.value = store.getters.getProperties;
-                        console.log(properties.value);
                     }else{
                         Swal.fire(
                             "Error",
@@ -297,7 +298,7 @@
                     );
                 }
             }).catch(error => {
-                console.log(error);
+                
                 Swal.fire(
                     'Error',
                     'Hubo un error, intenta despues.',
@@ -324,7 +325,7 @@
                     );
                 }
             }).catch(error => {
-                console.log(error);
+                
                 Swal.fire(
                     'Error',
                     'Hubo un error, intenta despues.',
@@ -352,7 +353,6 @@
 
     const totalPages = computed(() => Math.ceil(filteredContracts.value.length / itemsPerPage));
     const paginatedContracts = computed(() => {
-        console.log(filteredContracts.value);
         const start = (currentPage.value - 1) * itemsPerPage;
         return filteredContracts.value.slice(start, start + itemsPerPage);
     });
@@ -406,7 +406,7 @@
                     );
                 }
             }).catch(error => {
-                console.log(error);
+                
                 Swal.fire(
                     'Error',
                     'Hubo un error, intenta despues.',
@@ -501,7 +501,7 @@
                 );
             }
         }).catch(error => {
-            console.log(error);
+            
             Swal.fire(
                 'Error',
                 'Hubo un error, intenta despues.',

@@ -8,4 +8,10 @@ import store from './store';
 import { createAdminOnlyDirective } from './directives/adminOnly'
 
 
-createApp(App).directive('admin-only', createAdminOnlyDirective(store)).use(router).use(store).mount('#app')
+// createApp(App).directive('admin-only', createAdminOnlyDirective(store)).use(router).use(store).mount('#app')
+
+const app = createApp(App).directive('admin-only', createAdminOnlyDirective(store)).use(router).use(store)
+
+router.isReady().then(() => {
+    app.mount('#app')
+})

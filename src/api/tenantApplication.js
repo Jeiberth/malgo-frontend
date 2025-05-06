@@ -36,7 +36,6 @@ export default class tenantApplication {
     }
 
     createTenantApplication(data){
-        console.log(data);
         return axios({
             url: '/create/tenant/application',
             method: 'post',

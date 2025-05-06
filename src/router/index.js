@@ -113,7 +113,7 @@ const routes = [
 
 
 const router = createRouter({
-  history: createWebHashHistory('/malgo-frontend/'), // Set the base for GitHub Pages
+  history: createWebHashHistory('/'),
   routes
 })
 

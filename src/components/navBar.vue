@@ -2,7 +2,11 @@
 <template>
     <nav class="navbar-container">
             <div class="navbar-content">
-            <div class="navbar-logo"><i class="fa-solid fa-people-roof"style="margin-right: 10px; color: #8f754f;"></i>Malgo</div>
+            <!-- <div class="navbar-logo"><i class="fa-solid fa-people-roof"style="margin-right: 10px; color: #8f754f;"></i>Malgo</div> -->
+            <div class="navbar-logo">
+              <img src="../assets/malgoLogo.png" alt="Logo" style="width: 40px; height: 40px; margin-right: 0px;">
+              Malgo
+            </div>
             <button class="hamburger" @click="toggleDrawer" aria-label="Toggle Menu">
                 <i class="fas fa-bars"></i>
             </button>
@@ -183,6 +187,18 @@ const filteredRoutes = computed(() => {
   font-size: 1.4rem;
   color: black;
 }
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* or use margin-right on img if not using gap */
+}
+.navbar-logo img {
+  width: 40px;
+  height: 40px;
+}
+
 
 /* === Hamburger Button === */
 .hamburger {

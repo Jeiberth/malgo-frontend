@@ -529,7 +529,6 @@
             if (response && response.success) {
               this.$store.commit('setProperties', response.data);
               this.properties = this.getProperties;
-              console.log(this.properties);
             } else {
               Swal.fire(
                 'Error',

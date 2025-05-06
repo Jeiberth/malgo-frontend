@@ -548,7 +548,6 @@
                     if(response && response.success){
                         store.commit('setProperties', response.data)
                         properties.value = store.getters.getProperties;
-                        console.log(properties.value);
                     }else{
                         Swal.fire(
                             "Error",
@@ -580,7 +579,6 @@
                     );
                 }
             }).catch(error => {
-                console.log(error);
                 Swal.fire(
                     'Error',
                     'Hubo un error, intenta despues.',
@@ -875,98 +873,100 @@
     const properties = ref();
 
 
-    //DELETE FROM HERE
+    // //DELETE FROM HERE
 
-    function getRandomItem(arr) {
-        return arr[Math.floor(Math.random() * arr.length)];
-    }
+    // function getRandomItem(arr) {
+    //     return arr[Math.floor(Math.random() * arr.length)];
+    // }
 
-    const property_ids = [
-        "SE-APTO-201", "SE-APTO-202", "SE-APTO-301", "SE-APTO-302", "SE-APTO-401", "SE-APTO-402", "SE-APTO-501", "SE-APTO-502",
-        "SE-PARQ-A1", "SE-PARQ-A2", "SE-PARQ-B1", "SE-PARQ-B2", "SE-PARQ-C1", "SE-PARQ-C2", "SE-PARQ-D1", "SE-PARQ-D2",
-        "SE-LOC-1", "FO-APTO-201", "FO-APTO-301", "FO-PARQ-1", "FO-PARQ-2", "PE-APTO-101", "PE-APTO-102", "PE-APTO-103"
-    ];
+    // const property_ids = [
+    //     "SE-APTO-201", "SE-APTO-202", "SE-APTO-301", "SE-APTO-302", "SE-APTO-401", "SE-APTO-402", "SE-APTO-501", "SE-APTO-502",
+    //     "SE-PARQ-A1", "SE-PARQ-A2", "SE-PARQ-B1", "SE-PARQ-B2", "SE-PARQ-C1", "SE-PARQ-C2", "SE-PARQ-D1", "SE-PARQ-D2",
+    //     "SE-LOC-1", "FO-APTO-201", "FO-APTO-301", "FO-PARQ-1", "FO-PARQ-2", "PE-APTO-101", "PE-APTO-102", "PE-APTO-103"
+    // ];
 
-    const statuse = ["Pendiente", "Pendiente Rechazado", "Pendiente Contrato", "Guardado", "Guardado Rechazado", "En Curso", "Terminado"];
-    const occupations = ['hogar', 'empleado', 'independiente', 'estudiante', 'pensionado'];
-    const pet_types = ['perro', 'gato', 'pez', 'ave', 'conejo', 'tortuga', 'iguana', 'gallina', "otro"];
-    const pet_sexes = ["Macho", "Hembra"];
-    const vehicle_types = ["Carro", "Moto"];
-    const namePool = [
-        "Carlos Pérez", "María Rodríguez", "Andrés Gómez", "Luisa Martínez", "Javier López",
-        "Camila Torres", "Mateo Ramírez", "Valentina Castro", "Juan Herrera", "Sofía Morales"
-        ];
+    // const statuse = ["Pendiente", "Pendiente Rechazado", "Pendiente Contrato", "Guardado", "Guardado Rechazado", "En Curso", "Terminado"];
+    // const occupations = ['hogar', 'empleado', 'independiente', 'estudiante', 'pensionado'];
+    // const pet_types = ['perro', 'gato', 'pez', 'ave', 'conejo', 'tortuga', 'iguana', 'gallina', "otro"];
+    // const pet_sexes = ["Macho", "Hembra"];
+    // const vehicle_types = ["Carro", "Moto"];
+    // const namePool = [
+    //     "Carlos Pérez", "María Rodríguez", "Andrés Gómez", "Luisa Martínez", "Javier López",
+    //     "Camila Torres", "Mateo Ramírez", "Valentina Castro", "Juan Herrera", "Sofía Morales"
+    //     ];
 
 
-    function generateRandomDate(startYear = 2023, endYear = 2025) {
-        const start = new Date(`${startYear}-01-01`);
-        const end = new Date(`${endYear}-12-31`);
-        return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString().split('T')[0];
-    }
+    // function generateRandomDate(startYear = 2023, endYear = 2025) {
+    //     const start = new Date(`${startYear}-01-01`);
+    //     const end = new Date(`${endYear}-12-31`);
+    //     return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString().split('T')[0];
+    // }
 
-    function createApplication(id) {
-        const financialCount = Math.floor(Math.random() * 4) + 1;
-        const financials = Array.from({ length: financialCount }).map((_, i) => ({
-            full_name: getRandomItem(namePool),
-            email: `person${id}${i}@example.com`,
-            phone_number: `+1${Math.floor(Math.random() * 1000000000)}`,
-            document_type: "Passport",
-            document_number: `ID-${id}${i}`,
-            birthdate: `${Math.floor(Math.random() * 41) + 20} años`, // Random between 20 and 60
-            nationality: getRandomItem(["Chamo", "Veneco", "Costeño", "Cobenero", "Colombiano"]),
-            employment_status: getRandomItem(['Empleado - Termino Fijo', 'Empleado - Termino Indefinido', 'Empleado - Prestacion de Servicios', "Independiente", "Independiente"]),
-            monthly_salary: `${Math.floor(Math.random() * 3000 + 4000)}`,
-            start_current_job_date: generateRandomDate(2015, 2023),
-            document_id: 'https://pdfobject.com/pdf/sample.pdf',
-            document_certf: 'https://pdfobject.com/pdf/sample.pdf',
-            document_pay_1: 'https://pdfobject.com/pdf/sample.pdf',
-            document_pay_2: 'https://pdfobject.com/pdf/sample.pdf',
-            document_pay_3: 'https://pdfobject.com/pdf/sample.pdf',
-            guarantor_full_name: `Guarantor ${id}`,
-            guarantor_document_type: "ID Card",
-            guarantor_document_number: `G-${id}${i}`,
-            guarantor_property_cert: 'https://pdfobject.com/pdf/sample.pdf',
-            principal: i === 0,
-            additional_incomes: Math.random() > 0.4 ? [
-            {
-                monthly_amount: `${Math.floor(Math.random() * 2000 + 500)}`,
-                description: getRandomItem(["Freelance Work", "Rental Income", "Investments"]),
-                income_cert: 'https://pdfobject.com/pdf/sample.pdf'
-            }
-            ] : []
-        }));
+    // function createApplication(id) {
+    //     const financialCount = Math.floor(Math.random() * 4) + 1;
+    //     const financials = Array.from({ length: financialCount }).map((_, i) => ({
+    //         full_name: getRandomItem(namePool),
+    //         email: `person${id}${i}@example.com`,
+    //         phone_number: `+1${Math.floor(Math.random() * 1000000000)}`,
+    //         document_type: "Passport",
+    //         document_number: `ID-${id}${i}`,
+    //         birthdate: `${Math.floor(Math.random() * 41) + 20} años`, // Random between 20 and 60
+    //         nationality: getRandomItem(["Chamo", "Veneco", "Costeño", "Cobenero", "Colombiano"]),
+    //         employment_status: getRandomItem(['Empleado - Termino Fijo', 'Empleado - Termino Indefinido', 'Empleado - Prestacion de Servicios', "Independiente", "Independiente"]),
+    //         monthly_salary: `${Math.floor(Math.random() * 3000 + 4000)}`,
+    //         start_current_job_date: generateRandomDate(2015, 2023),
+    //         document_id: 'https://pdfobject.com/pdf/sample.pdf',
+    //         document_certf: 'https://pdfobject.com/pdf/sample.pdf',
+    //         document_pay_1: 'https://pdfobject.com/pdf/sample.pdf',
+    //         document_pay_2: 'https://pdfobject.com/pdf/sample.pdf',
+    //         document_pay_3: 'https://pdfobject.com/pdf/sample.pdf',
+    //         guarantor_full_name: `Guarantor ${id}`,
+    //         guarantor_document_type: "ID Card",
+    //         guarantor_document_number: `G-${id}${i}`,
+    //         guarantor_property_cert: 'https://pdfobject.com/pdf/sample.pdf',
+    //         principal: i === 0,
+    //         additional_incomes: Math.random() > 0.4 ? [
+    //         {
+    //             monthly_amount: `${Math.floor(Math.random() * 2000 + 500)}`,
+    //             description: getRandomItem(["Freelance Work", "Rental Income", "Investments"]),
+    //             income_cert: 'https://pdfobject.com/pdf/sample.pdf'
+    //         }
+    //         ] : []
+    //     }));
 
-        return {
-            id,
-            property_id: getRandomItem(property_ids),
-            property: {
-                sku: getRandomItem(property_ids),
-            },
-            move_in_date: generateRandomDate(),
-            created_at: generateRandomDate(2023, 2024),
-            status: getRandomItem(statuse),
-            financial_responsibles: financials,
-            cohabitants: Array.from({ length: Math.floor(Math.random() * 6 + 1) }).map((_, i) => ({
-            first_name: `CoHabit${i}`,
-            last_name: `User${id}`,
-            document_number: `DOC-${id}-${i}`,
-            occupation: getRandomItem(occupations),
-            age: `${Math.floor(Math.random() * 50 + 18)}`,
-            relationship: "Friend"
-            })),
-            pets: Array.from({ length: Math.floor(Math.random() * 4) }).map(() => ({
-            type: getRandomItem(pet_types),
-            sex: getRandomItem(pet_sexes)
-            })),
-            parking_needs: Array.from({ length: Math.floor(Math.random() * 3) }).map(() => ({
-            vehicle_type: getRandomItem(vehicle_types)
-            }))
-        };
-    }
+    //     return {
+    //         id,
+    //         property_id: getRandomItem(property_ids),
+    //         property: {
+    //             sku: getRandomItem(property_ids),
+    //         },
+    //         move_in_date: generateRandomDate(),
+    //         created_at: generateRandomDate(2023, 2024),
+    //         status: getRandomItem(statuse),
+    //         financial_responsibles: financials,
+    //         cohabitants: Array.from({ length: Math.floor(Math.random() * 6 + 1) }).map((_, i) => ({
+    //         first_name: `CoHabit${i}`,
+    //         last_name: `User${id}`,
+    //         document_number: `DOC-${id}-${i}`,
+    //         occupation: getRandomItem(occupations),
+    //         age: `${Math.floor(Math.random() * 50 + 18)}`,
+    //         relationship: "Friend"
+    //         })),
+    //         pets: Array.from({ length: Math.floor(Math.random() * 4) }).map(() => ({
+    //         type: getRandomItem(pet_types),
+    //         sex: getRandomItem(pet_sexes)
+    //         })),
+    //         parking_needs: Array.from({ length: Math.floor(Math.random() * 3) }).map(() => ({
+    //         vehicle_type: getRandomItem(vehicle_types)
+    //         }))
+    //     };
+    // }
 
-    //TO HERE
+    // //TO HERE
 
-    const allTenantApplications = ref(Array.from({ length: 15 }).map((_, i) => createApplication(i + 6)));
+    // const allTenantApplications = ref(Array.from({ length: 15 }).map((_, i) => createApplication(i + 6)));
+    const allTenantApplications = ref();
+
 
 </script>
 

@@ -77,7 +77,6 @@
                     if(response && response.success){
                         store.commit('setProperties', response.data)
                         properties.value = store.getters.getProperties;
-                        console.log(properties.value);
                     }else{
                         Swal.fire(
                             "Error",

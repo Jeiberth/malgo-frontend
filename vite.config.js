@@ -15,7 +15,8 @@ import { resolve } from 'path'; // Import the 'resolve' function
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: '/malgo-frontend/', // Replace with your repository name
+  // base: '/malgo-frontend/', // Replace with your repository name
+  base: '/', // Replace with your repository name
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'), // Map '@' to the 'src' directory

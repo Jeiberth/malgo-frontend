@@ -6,7 +6,7 @@
         </div>
     </div>
 
-    <div class="container">
+    <div class="container" v-if="thinking">
         <h1 class="titulo-principal">Formulario de Aplicación para Arrendamiento</h1>
 
         <form @submit.prevent="validarFormulario" class="formulario">
@@ -374,12 +374,15 @@
     const tenantApplicationResource = new tenantApplicationApi();
     const propertyResource = new property();
 
+    const thinking = ref(false);
+
     onMounted(async () => {
 
         loading.value = true;
 
         await propertyResource.checkIfPropertyApplicationOpen({sku: route.params.propertysku}).then(response => {
             if (response && response.success) {
+                thinking.value = true;
             } else {
                 router.push({ name: '404'})
             }

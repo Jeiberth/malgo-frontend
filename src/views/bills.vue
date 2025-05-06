@@ -433,7 +433,6 @@
                 );
             }
         }).catch(error => {
-            console.log(error);
             Swal.fire(
                 'Error',
                 'Hubo un problema al procesar el pago. Por favor intente nuevamente.',
