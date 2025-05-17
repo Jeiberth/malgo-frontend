@@ -41,6 +41,16 @@ const routes = [
     }
   },
   {
+    path: '/document/asked',
+    name: 'document_asked',
+    component: () => import('../views/document_asked.vue'),
+    meta: {
+      // icon: 'fa-regular fa-rectangle-list ',
+      // label: 'Formulario',
+      hideNavBar: true
+    }
+  },
+  {
     path: '/aplicaciones',
     name: 'aplicaciones',
     component: () => import('../views/applications.vue'),

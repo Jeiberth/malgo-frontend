@@ -106,15 +106,29 @@
                                 </select>
                             </div>
 
+                          
+
                             <div class="campo">
                                 <label class="etiqueta">Salario mensual (COP)</label>
                                 <input v-model="responsable.monthly_salary" type="number" class="entrada" required placeholder="Salario mensual (COP)">
                             </div>
 
                             <div class="campo">
-                                <label class="etiqueta">Fecha de inicio en el trabajo actual</label>
+                                <label class="etiqueta" v-if="responsable.employment_status == 'Pensionado'">Fecha en que comenzó a recibir su pensión</label>
+                                <label class="etiqueta" v-else-if="responsable.employment_status == 'Independiente'">Fecha de antigüedad en la Cámara de Comercio / Fecha de inicio en esta actividad económica</label>
+                                <label class="etiqueta" v-else>Fecha de inicio en el trabajo actual</label>
                                 <input v-model="responsable.start_current_job_date" type="date" :max="today" class="entrada" required>
                                 <!-- <p class="ayuda"  style="margin-bottom: 0;">Si tiene menos de 2 años en este trabajo, necesitamos un fiador con finca raiz</p> -->
+                            </div>
+
+                              <div class="campo" v-if="responsable.employment_status == 'Independiente'">
+                                <label class="etiqueta">Descripción de su actividad economica</label>
+                                <!-- <input v-model="responsable.business_description" type="text" class="entrada" placeholder="Descripción de su actividad economica"> -->
+                                <textarea v-model="responsable.business_description"
+                                    class="entrada"
+                                    placeholder="Descripción de su actividad económica"
+                                    rows="4"
+                                    cols="50"></textarea>
                             </div>
                         </div>
                     </div>
@@ -149,6 +163,7 @@
                                     <label class="etiqueta">Certificado de cámara de comercio</label>
                                     <input type="file" class="entrada pl-3" accept=".pdf" required
                                         @change="e => manejarArchivo(e, responsable, 'document_certf')">
+                                    <p class="ayuda"  style="margin-bottom: 0;">En caso de no contar con el certificado de la Cámara de Comercio, suba un documento que describa brevemente su actividad económica.</p>
                                 </div>
 
                                 <div v-for="n in 3" :key="n" class="campo">
@@ -172,10 +187,18 @@
                                 </div>
                             </template>
 
+                            <div class="campo">
+                                <label class="etiqueta">Otro Documento</label>
+                                <input type="file" class="entrada pl-3" accept=".pdf"
+                                        @change="e => manejarArchivo(e, responsable, 'document_other')">
+                                <p class="ayuda"  style="margin-bottom: 0;">Adjunte cualquier documento que respalde sus ingresos o que considere relevante para su solicitud.</p>
+                            </div>
+
                         </div>
                     </div>
 
-                    <div v-if="necesitaFiador(responsable)" class="grupo-campos fiador">
+                    <!-- <div v-if="necesitaFiador(responsable)" class="grupo-campos fiador"> -->
+                    <div v-if="necesitaFiadorComputeds[index]" class="grupo-campos fiador">
                         <h3 class="subtitulo">📝 Información del Fiador</h3>
                         <div class="campos-grid">
                             <div class="campo">
@@ -215,7 +238,7 @@
                         <div v-for="(ingreso, i) in responsable.AdditionalIncome" :key="i" style="margin-bottom: 20px;">
                             <div class="campos-grid ingreso" style="padding: 24px;">
                                 <div class="campo">
-                                    <input v-model="ingreso.monthly_amount" type="number" class="entrada" placeholder="Monto mensual (COP)">
+                                    <input v-model="ingreso.monthly_amount" type="number" @input="forceUpdate" class="entrada" placeholder="Monto mensual (COP)">
                                 </div>
 
                                 <div class="campo">
@@ -318,6 +341,15 @@
                             </select>
                         </div>
 
+                        <div class="campo">
+                            <select v-model="mascota.size" class="entrada" required>
+                                <option value="" disabled selected>Seleccione un tamaño</option>
+                                <option value="Pequeño">Pequeño</option>
+                                <option value="Mediano">Mediano</option>
+                                <option value="Grande">Grande</option>
+                            </select>
+                        </div>
+
                         <button type="button" class="boton-eliminar" @click="eliminarMascota(i)">Eliminar</button>
                     </div>
                     <!-- <hr style="width: 100%; border: 1px dashed #d7b377;" v-if="i < formData.Pet.length - 1"> -->
@@ -361,7 +393,7 @@
 
   <script setup>
 
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, computed } from 'vue';
     import Swal from 'sweetalert2';
     import tenantApplicationApi from '@/api/tenantApplication';
     import { useRoute } from 'vue-router'
@@ -389,6 +421,7 @@
         }).catch(error => {
             router.push({ name: '404'})
         });
+
 
         loading.value = false;
 
@@ -443,7 +476,8 @@
     const agregarMascota = () => {
         formData.value.Pet.push({
             type: '',
-            sex: ''
+            sex: '',
+            size: ''
         });
     };
 
@@ -465,14 +499,126 @@
         objetivo[campo] = event.target.files[0];
     };
 
-    const necesitaFiador = (responsable) => {
+/*    const necesitaFiador = (responsable) => {
         if (!responsable.start_current_job_date) return false;
+        const inicio = new Date(responsable.start_current_job_date);
+        const diff = Date.now() - inicio.getTime();
+        return (diff / (1000 * 60 * 60 * 24 * 365)) < 2;
+    };*/
+
+
+    const necesitaFiador = (responsable, index) => {
+        // Always return false for co-solicitantes (index > 0)
+        if (index > 0) return false;
+        
+        // For principal applicant (index === 0)
+        const totalIncome = formData.value.FinancialResponsible.reduce((sum, r) => {
+            const additionalIncome = r.AdditionalIncome.reduce((incomeSum, income) => 
+                incomeSum + (parseFloat(income.monthly_amount) || 0)
+            , 0);
+            return sum + (parseFloat(r.monthly_salary) || 0) + additionalIncome;
+        }, 0);
+
+        
+        // Check if total income is greater than 3,000,000
+        if (totalIncome < 3000000) return true;
+        
+        // Check if anyone (principal or co-solicitantes) has more than 2 years working
+        const hasExperiencedWorker = formData.value.FinancialResponsible.some(r => {
+            if (!r.start_current_job_date) return false;
+            const startDate = new Date(r.start_current_job_date);
+            const diff = Date.now() - startDate.getTime();
+            return (diff / (1000 * 60 * 60 * 24 * 365)) >= 2;
+        });
+        
+        if (hasExperiencedWorker) return false;
+        
+        // If none of the above conditions are met, check if this specific applicant needs a guarantor
+        if (!responsable.start_current_job_date) return true;
         const inicio = new Date(responsable.start_current_job_date);
         const diff = Date.now() - inicio.getTime();
         return (diff / (1000 * 60 * 60 * 24 * 365)) < 2;
     };
 
+    const forceUpdate = () => {
+        formData.value = {...formData.value};
+    };
+
+    const calcularNecesitaFiador = (responsable, index) => {
+        // Always return false for co-solicitantes
+        if (index > 0) return false;
+        
+        // Calculate total income
+        const totalIncome = formData.value.FinancialResponsible.reduce((sum, r) => {
+            const additionalIncome = r.AdditionalIncome.reduce((incomeSum, income) => 
+            incomeSum + (parseFloat(income.monthly_amount) || 0), 0);
+            return sum + (parseFloat(r.monthly_salary) || 0) + additionalIncome;
+        }, 0);
+        
+        // Check if total income > 3,000,000
+        if (totalIncome < 3000000) return true;
+        
+        // Check if anyone has > 2 years experience
+        const hasExperiencedWorker = formData.value.FinancialResponsible.some(r => {
+            if (!r.start_current_job_date) return false;
+            const startDate = new Date(r.start_current_job_date);
+            const diff = Date.now() - startDate.getTime();
+            return (diff / (1000 * 60 * 60 * 24 * 365)) >= 2;
+        });
+        
+        if (hasExperiencedWorker) return false;
+        
+        // Check this applicant's work duration
+        if (!responsable.start_current_job_date) return true;
+        const inicio = new Date(responsable.start_current_job_date);
+        const diff = Date.now() - inicio.getTime();
+        return (diff / (1000 * 60 * 60 * 24 * 365)) < 2;
+    };
+
+    // Then update your computed property to use this function
+    const necesitaFiadorComputeds = computed(() => {
+        return formData.value.FinancialResponsible.map((r, i) => calcularNecesitaFiador(r, i));
+    });
+
     const loading = ref(false);
+
+    const isFieldValid = (value) => {
+        return value !== null && value !== undefined && value !== '';
+    };
+
+    const validateObject = (obj, path = '') => {
+        for (const key in obj) {
+        if (Object.hasOwnProperty.call(obj, key)) {
+            const value = obj[key];
+            const currentPath = path ? `${path}.${key}` : key;
+
+            if (Array.isArray(value)) {
+            for (let i = 0; i < value.length; i++) {
+                validateObject(value[i], `${currentPath}[${i}]`);
+            }
+            } else if (typeof value === 'object' && value !== null && !(value instanceof File)) {
+            validateObject(value, currentPath);
+            } else if (!isFieldValid(value)) {
+
+                if(key == "business_description"){
+                    if(obj.employment_status != "Independiente"){
+                        return true;
+                    }
+                }
+
+                if(key == 'document_other') return true;
+
+                Swal.fire(
+                    'Error',
+                    'Todos los campos deben ser completados con el formato correcto.',
+                    'error'
+                );
+                return false;
+            }
+        }
+        }
+        return true;
+    };
 
     const validarFormulario = async () => {
 
@@ -494,6 +640,97 @@
                 'error',
             );
             return;
+        }
+
+        
+        // Validate FinancialResponsibles, including guarantor fields if needed
+        for (const [index, responsable] of formData.value.FinancialResponsible.entries()) {
+        //for (const responsable of formData.value.FinancialResponsible) {
+            // Validate the basic fields of responsable, EXCLUDING guarantor fields.
+            const {
+                guarantor_full_name,
+                guarantor_document_type,
+                guarantor_document_number,
+                guarantor_property_cert,
+                ...basicResponsableData
+            } = responsable;
+
+            if (!validateObject(basicResponsableData)) {
+            return;
+            }
+
+            if (calcularNecesitaFiador(responsable, index)) {
+                if (!isFieldValid(responsable.guarantor_full_name)) {
+                    Swal.fire(
+                    'Error',
+                    'Por favor, complete el nombre completo del fiador.',
+                    'error'
+                    );
+                    return;
+                }
+                if (!isFieldValid(responsable.guarantor_document_type)) {
+                    Swal.fire(
+                    'Error',
+                    'Por favor, complete el tipo de documento del fiador.',
+                    'error'
+                    );
+                    return;
+                }
+                if (!isFieldValid(responsable.guarantor_document_number)) {
+                    Swal.fire(
+                    'Error',
+                    'Por favor, complete el número de documento del fiador.',
+                    'error'
+                    );
+                    return;
+                }
+                if (!responsable.guarantor_property_cert) {
+                    Swal.fire(
+                    'Error',
+                    'Por favor, adjunte el certificado de libertad del fiador.',
+                    'error'
+                    );
+                    return;
+                }
+            }
+        }
+
+        // Ensure at least one cohabitant
+        if (!formData.value.Cohabitant || formData.value.Cohabitant.length === 0) {
+            Swal.fire(
+            'Error',
+            'Debe haber al menos una persona que vivirá en la propiedad.',
+            'error'
+            );
+            return;
+        }
+        // Validate Cohabitants
+        for (let i = 0; i < formData.value.Cohabitant.length; i++) {
+            const cohabitant = formData.value.Cohabitant[i];
+            if (!isFieldValid(cohabitant.first_name)) {
+            Swal.fire('Error', `Por favor, complete el nombre del residente ${i + 1}.`, 'error');
+            return;
+            }
+            if (!isFieldValid(cohabitant.last_name)) {
+            Swal.fire('Error', `Por favor, complete el apellido del residente ${i + 1}.`, 'error');
+            return;
+            }
+            if (!isFieldValid(cohabitant.document_number)) {
+            Swal.fire('Error', `Por favor, complete el n\u00famero de documento del residente ${i + 1}.`, 'error');
+            return;
+            }
+            if (!isFieldValid(cohabitant.occupation)) {
+            Swal.fire('Error', `Por favor, complete la ocupaci\u00f3n del residente ${i + 1}.`, 'error');
+            return;
+            }
+            if (!isFieldValid(cohabitant.age)) {
+            Swal.fire('Error', `Por favor, complete la edad del residente ${i + 1}.`, 'error');
+            return;
+            }
+            if (!isFieldValid(cohabitant.relationship)) {
+            Swal.fire('Error', `Por favor, complete el parentesco del residente ${i + 1}.`, 'error');
+            return;
+            }
         }
 
         loading.value = true;
@@ -563,11 +800,13 @@
             employment_status: '',
             monthly_salary: '',
             start_current_job_date: '',
+            business_description: "",
             document_id: null,
             document_certf: null,
             document_pay_1: null,
             document_pay_2: null,
             document_pay_3: null,
+            document_other: null,
             guarantor_full_name: '',
             guarantor_document_type: '',
             guarantor_document_number: '',

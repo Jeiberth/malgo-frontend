@@ -5,6 +5,7 @@ import store from '/src/store'  // Make sure to import the Vuex store
 
 const axiosInstance = axios.create({
   baseURL: 'https://malgo-backend-production.up.railway.app/api/',  // Example base URL
+    // baseURL: 'http://localhost:8000/api/', 
   // headers: {
   //   'Content-Type': 'application/json'
   // }

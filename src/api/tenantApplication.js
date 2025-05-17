@@ -44,5 +44,29 @@ export default class tenantApplication {
         });
     }
 
+    updateComment(data){
+        return axios({
+            url: '/tenant/application/comment',
+            method: 'put',
+            data: data,
+        });
+    }
+
+    requestAdditionalInfo(data){
+        return axios({
+            url: '/tenant/application/request/doc',
+            method: 'put',
+            data: data,
+        });
+    }
+
+    submitAdditionalInfo(data){
+        return axios({
+            url: '/tenant/application/request/doc/upload',
+            method: 'post',
+            data: data,
+        });
+    }
+
 
 }

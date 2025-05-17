@@ -47,8 +47,15 @@
                                             <label class="etiqueta">Solicitud de Arrendamiento</label>
                                             <select v-model="newContract.tenant_application_id" class="entrada" :class="{ 'is-invalid': errors.tenant_application_id }">
                                                 <option value="" disabled selected>Seleccionar Solicitud</option>
-                                                <option v-for="app in tenantApplications" :key="app.id" :value="app.id">
+                                                <!-- <option v-for="app in tenantApplications" :key="app.id" :value="app.id">
                                                     {{ app.property.sku }} - {{ app.financial_responsibles[0].full_name }}
+                                                </option> -->
+                                                <option
+                                                    v-for="app in tenantApplications"
+                                                    :key="app?.id"
+                                                    :value="app?.id"
+                                                >
+                                                    {{ app?.property?.sku || 'Sin SKU' }} - {{ app?.financial_responsibles?.[0]?.full_name || 'Sin nombre' }}
                                                 </option>
                                             </select>
                                             <div v-if="errors.tenant_application_id" class="text-danger mt-1">{{ errors.tenant_application_id }}</div>
@@ -244,14 +251,16 @@
 
     const properties = ref([{ id: 1, sku: 'a' }]);
 
-    const tenantApplications = ref(Array.from({ length: 10 }, (_, i) => ({
-        id: i + 1,
-        property_id: properties.value[Math.floor(Math.random() * 1)].sku,
-        financial_responsibles: [{ full_name: ['Laura', 'Carlos', 'María', 'Andrés'][Math.floor(Math.random() * 4)] }],
-        property: {
-            sku: propertySkus[Math.floor(Math.random() * propertySkus.length)],
-        },
-    })));
+    // const tenantApplications = ref(Array.from({ length: 10 }, (_, i) => ({
+    //     id: i + 1,
+    //     property_id: properties.value[Math.floor(Math.random() * 1)].sku,
+    //     financial_responsibles: [{ full_name: ['Laura', 'Carlos', 'María', 'Andrés'][Math.floor(Math.random() * 4)] }],
+    //     property: {
+    //         sku: propertySkus[Math.floor(Math.random() * propertySkus.length)],
+    //     },
+    // })));
+
+    const tenantApplications = ref({});
 
     onMounted(async () => {
 

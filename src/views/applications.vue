@@ -157,17 +157,22 @@
                     <button
                         style="margin-right: 10px; background-color: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 25px; font-weight: 600;"
                         @click="approveTenantApplication" v-if="formData.status == 'Pendiente' || formData.status == 'Guardado'">
-                        Aprobar solicitud
+                        Aprobar
                     </button>
                     <button
                         style="margin-right: 10px; background-color: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 25px; font-weight: 600;"
                         @click="denyTenantApplication" v-if="formData.status == 'Pendiente' || formData.status == 'Guardado'">
-                        Denegar solicitud
+                        Denegar
                     </button>
                     <button
-                        style="background-color: #e29d36; color: white; border: none; padding: 8px 16px; border-radius: 25px; font-weight: 600;"
+                        style="margin-right: 10px; background-color: #e29d36; color: white; border: none; padding: 8px 16px; border-radius: 25px; font-weight: 600;"
                         @click="saveTenantApplication" v-if="formData.status == 'Pendiente' || formData.status == 'Guardado'">
-                        Guardar solicitud
+                        Guardar
+                    </button>
+                    <button
+                        style="background-color: #1f2687; color: white; border: none; padding: 8px 16px; border-radius: 25px; font-weight: 600;"
+                        @click="openInfoNeededModal">
+                        Solicitar Doc
                     </button>
                 </div>
             </div>
@@ -264,6 +269,10 @@
                                                     <th>Fecha de inicio en el trabajo actual</th>
                                                     <td>{{ responsable.start_current_job_date }}</td>
                                                 </tr>
+                                                <tr v-if="responsable.employment_status == 'Independiente'">
+                                                    <th>Descripción de su actividad economica</th>
+                                                    <td>{{ responsable.business_description }}$</td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -286,23 +295,24 @@
                                                     </td>
                                                 </tr>
 
-                                                <!-- Show documents based on employment status -->
-                                                <template v-if="responsable.employment_status === 'Empleado'">
-                                                    <!-- Certificado laboral -->
+                                       
+                                                
+                                                <template  v-if="responsable.employment_status === 'Independiente'">
+                                                    <!-- Constancia de Pension -->
                                                     <tr>
-                                                        <th>Certificado laboral</th>
+                                                        <th>Certificado de cámara de comercio</th>
                                                         <td>
-                                                            <a v-if="responsable.document_certf" @click.prevent="openModal(responsable.document_certf_url, `Certificado laboral`)">
+                                                            <a v-if="responsable.document_certf" @click.prevent="openModal(responsable.document_certf_url, `Certificado de cámara de comercio`)">
                                                                 <i class="fas fa-file-pdf"></i>
                                                             </a>
                                                         </td>
                                                     </tr>
 
-                                                    <!-- Desprendible de pago 1, 2, 3 -->
+                                                    <!-- Extracto bancario 1, 2, 3 -->
                                                     <tr v-for="n in 3" :key="n">
-                                                        <th>Desprendible de pago {{ n }}</th>
+                                                        <th>Extracto bancario {{ n }}</th>
                                                         <td>
-                                                            <a v-if="responsable[`document_pay_${n}`]" @click.prevent="openModal(responsable[`document_pay_${n}_url`] , `Desprendible de pago ${n}`)">
+                                                            <a v-if="responsable[`document_pay_${n}`]" @click.prevent="openModal(responsable[`document_pay_${n}_url`], `Extracto bancario ${n}`)">
                                                                 <i class="fas fa-file-pdf"></i>
                                                             </a>
                                                         </td>
@@ -331,27 +341,47 @@
                                                     </tr>
                                                 </template>
 
+                                                         <!-- Show documents based on employment status -->
                                                 <template v-else>
-                                                    <!-- Constancia de Pension -->
+                                                    <!-- Certificado laboral -->
                                                     <tr>
-                                                        <th>Certificado de cámara de comercio</th>
+                                                        <th>Certificado laboral</th>
                                                         <td>
-                                                            <a v-if="responsable.document_certf" @click.prevent="openModal(responsable.document_certf_url, `Certificado de cámara de comercio`)">
+                                                            <a v-if="responsable.document_certf" @click.prevent="openModal(responsable.document_certf_url, `Certificado laboral`)">
                                                                 <i class="fas fa-file-pdf"></i>
                                                             </a>
                                                         </td>
                                                     </tr>
 
-                                                    <!-- Extracto bancario 1, 2, 3 -->
+                                                    <!-- Desprendible de pago 1, 2, 3 -->
                                                     <tr v-for="n in 3" :key="n">
-                                                        <th>Extracto bancario {{ n }}</th>
+                                                        <th>Desprendible de pago {{ n }}</th>
                                                         <td>
-                                                            <a v-if="responsable[`document_pay_${n}`]" @click.prevent="openModal(responsable[`document_pay_${n}_url`], `Extracto bancario ${n}`)">
+                                                            <a v-if="responsable[`document_pay_${n}`]" @click.prevent="openModal(responsable[`document_pay_${n}_url`] , `Desprendible de pago ${n}`)">
                                                                 <i class="fas fa-file-pdf"></i>
                                                             </a>
                                                         </td>
                                                     </tr>
                                                 </template>
+
+                                                <tr v-if="responsable.document_other">
+                                                    <th>Otro Documento</th>
+                                                    <td style="width: auto;">
+                                                        <a @click.prevent="openModal(responsable.document_other, `Otro Documento`)">
+                                                            <i class="fas fa-file-pdf"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+
+                                                <tr v-if="responsable.document_asked">
+                                                    <th>Documento Solicitado</th>
+                                                    <td style="width: auto;">
+                                                        <a @click.prevent="openModal(responsable.document_asked, `Documento Solicitado`)">
+                                                            <i class="fas fa-file-pdf"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+
                                             </tbody>
                                         </table>
                                     </div>
@@ -460,12 +490,14 @@
                                         <tr>
                                             <th>Tipo de mascota</th>
                                             <th>Sexo</th>
+                                            <th>Tamaño</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(mascota, i) in formData.pets" :key="i">
                                             <td>{{ mascota.type }}</td>
                                             <td>{{ mascota.sex }}</td>
+                                            <td>{{ mascota.size }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -497,13 +529,65 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
 
+                    <div class="seccion" v-if="formData">
+                        <h2 class="titulo-seccion" style="margin-bottom: 0;">Comentario</h2>
+                        <div class="d-flex align-items-center gap-3">
+                            <input 
+                                type="text" 
+                                class="entrada" 
+                                v-model="formData.comment" 
+                                placeholder="Add a comment..."
+                                style="flex: 1; background-color: white; margin-top: 15px !important;  border: 2px solid #987f53 !important; "
+                            >
+                            <button 
+                                class="boton-secundario"
+                                @click="updateComment"
+                                :disabled="!formData.comment"
+                            >
+                                Update
+                            </button>
+                        </div>
                     </div>
 
                 </div>
             </div>
         </div>
 
+    </div>
+
+    <div v-if="showInfoNeededModal" class="modal" @click.self="closeInfoNeededModal">
+        <div class="modal-content" style="max-width: 600px; height: auto !important;">
+            <div class="modal-header">
+                <span class="modal-title">Documentos/Informacion solicitada</span>
+                <button class="close-button" @click="closeInfoNeededModal">×</button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <div class="grupo-campos" style="margin-bottom: 0; border: none; background: transparent; padding: 0px !important; border-radius: 0 !important;">
+                    <div class="campo">
+                        <label class="etiqueta">Por favor, especifique qué documentos o información se requieren:</label>
+                        <textarea 
+                            class="entrada" 
+                            v-model="infoNeededText" 
+                            rows="5" 
+                            style="width: 100%; resize: vertical;"
+                            placeholder="Por favor, especifique qué documentos o información se requieren:"
+                        ></textarea>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                    <button 
+                        class="boton-primario" 
+                        @click="sendInfoNeeded"
+                        :disabled="!infoNeededText"
+                        style="padding: 0.75rem 1.5rem;"
+                    >
+                        Enviar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div v-if="showModal" class="modal" @click.self="closeModal">
@@ -594,6 +678,63 @@
         if (!date) return null;
         return new Date(date).toLocaleString();
     };
+
+    const showInfoNeededModal = ref(false);
+    const infoNeededText = ref('');
+
+    // Add these methods
+    function openInfoNeededModal() {
+        infoNeededText.value = '';
+        showInfoNeededModal.value = true;
+    }
+
+    function closeInfoNeededModal() {
+        showInfoNeededModal.value = false;
+    }
+
+    async function sendInfoNeeded() {
+        loading.value = true;
+        try {
+
+            const principalApplicant = formData.value.financial_responsibles[0];
+
+            // Replace with your actual API call
+            await tenantApplicationResource.requestAdditionalInfo({
+                id: tenantId.value,
+                email: principalApplicant.email,
+                name: principalApplicant.full_name,
+                message: infoNeededText.value
+            });
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Solicitud Enviada',
+                text: 'Su solicitud de información adicional ha sido enviada correctamente',
+                confirmButtonText: 'Aceptar'
+            });
+            closeInfoNeededModal();
+        } catch (error) {
+            Swal.fire('Error', 'No se pudo enviar la solicitud', 'error');
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    async function updateComment() {
+        try {
+            const response = await tenantApplicationResource.updateComment({
+                id: tenantId.value,
+                comment: formData.value.comment
+            });
+            
+            if (response && response.success) {
+            } else {
+                Swal.fire('Error', 'No se pudo actualizar el comentario', 'error');
+            }
+        } catch (error) {
+            Swal.fire('Error', 'No se pudo actualizar el comentario', 'error');
+        }
+    }
 
     async function approveTenantApplication(){
 
@@ -965,7 +1106,7 @@
     // //TO HERE
 
     // const allTenantApplications = ref(Array.from({ length: 15 }).map((_, i) => createApplication(i + 6)));
-    const allTenantApplications = ref();
+    const allTenantApplications = ref([]);
 
 
 </script>

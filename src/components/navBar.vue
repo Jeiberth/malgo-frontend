@@ -120,12 +120,12 @@ const leave = (el, done) => {
 
 const logout = async () => {
 
+    await authResource.logout();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     store.commit('setToken', null);
     store.commit('setUser', {});
     router.push({ name: 'login' });
-    authResource.logout();
 
 }
 
