@@ -126,17 +126,17 @@
                 <nav>
                     <ul class="pagination" >
                         <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                            <a class="page-link" @click="changePage(currentPage - 1)" href="#"><i class="fa fa-arrow-left"></i></a>
+                            <a class="page-link" @click="changePage(currentPage - 1)" ><i class="fa fa-arrow-left"></i></a>
                         </li>
                         <li class="page-item"
                             v-for="page in totalPages"
                             :key="page"
                             :class="{ active: currentPage === page }"
                             >
-                            <a class="page-link" @click="changePage(page)" href="#">{{ page }}</a>
+                            <a class="page-link" @click="changePage(page)">{{ page }}</a>
                         </li>
                         <li class="page-item" :class="{ disabled: currentPage === totalPages || totalPages === 0 }">
-                            <a class="page-link" @click="changePage(currentPage + 1)" href="#"><i class="fa fa-arrow-right"></i></a>
+                            <a class="page-link" @click="changePage(currentPage + 1)" ><i class="fa fa-arrow-right"></i></a>
                         </li>
                     </ul>
                 </nav>
@@ -156,18 +156,23 @@
                 <div>
                     <button
                         style="margin-right: 10px; background-color: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 25px; font-weight: 600;"
-                        @click="approveTenantApplication" v-if="formData.status == 'Pendiente' || formData.status == 'Guardado'">
+                        @click="approveTenantApplication">
                         Aprobar
                     </button>
                     <button
                         style="margin-right: 10px; background-color: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 25px; font-weight: 600;"
-                        @click="denyTenantApplication" v-if="formData.status == 'Pendiente' || formData.status == 'Guardado'">
+                        @click="denyTenantApplication">
                         Denegar
                     </button>
                     <button
                         style="margin-right: 10px; background-color: #e29d36; color: white; border: none; padding: 8px 16px; border-radius: 25px; font-weight: 600;"
-                        @click="saveTenantApplication" v-if="formData.status == 'Pendiente' || formData.status == 'Guardado'">
+                        @click="saveTenantApplication">
                         Guardar
+                    </button>
+                    <button
+                        style="margin-right: 10px; background-color: #e29d36; color: white; border: none; padding: 8px 16px; border-radius: 25px; font-weight: 600;"
+                        @click="deleteTenantApplication">
+                        Eliminar
                     </button>
                     <button
                         style="background-color: #1f2687; color: white; border: none; padding: 8px 16px; border-radius: 25px; font-weight: 600;"
@@ -367,7 +372,7 @@
                                                 <tr v-if="responsable.document_other">
                                                     <th>Otro Documento</th>
                                                     <td style="width: auto;">
-                                                        <a @click.prevent="openModal(responsable.document_other, `Otro Documento`)">
+                                                        <a @click.prevent="openModal(responsable.document_other_url, `Otro Documento`)">
                                                             <i class="fas fa-file-pdf"></i>
                                                         </a>
                                                     </td>
@@ -376,7 +381,7 @@
                                                 <tr v-if="responsable.document_asked">
                                                     <th>Documento Solicitado</th>
                                                     <td style="width: auto;">
-                                                        <a @click.prevent="openModal(responsable.document_asked, `Documento Solicitado`)">
+                                                        <a @click.prevent="openModal(responsable.document_asked_url, `Documento Solicitado`)">
                                                             <i class="fas fa-file-pdf"></i>
                                                         </a>
                                                     </td>
@@ -793,6 +798,64 @@
 
     }
 
+    async function deleteTenantApplication(){
+
+        const resultado = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: '¿Deseas eliminar este aplicante? Esto eliminara toda su informacion de la base de datos y NO notificara el usario',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'No, cancelar',
+            reverseButtons: true,
+        })
+
+        loading.value = true;
+
+        if (resultado.isConfirmed) {
+
+            await tenantApplicationResource.deleteTenantApplication({tenantID: tenantId.value})
+                .then((response) => {
+                    if(response && response.success){
+                        if (response.success) {
+                            allTenantApplications.value = response.data;
+                            store.commit('setTenantApplications', allTenantApplications.value)
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Aplicacion Eliminada',
+                                text: 'La aplicacion ha sido eliminada exitosamente y el usuario NO ha sido notificado',
+                                confirmButtonText: 'Aceptar'
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error',
+                                'Hubo un error, intenta despues.',
+                                'error'
+                            );
+                        }
+                    }else{
+                        Swal.fire(
+                                'Error',
+                                'Hubo un error, intenta despues.',
+                                'error'
+                            );
+                    }
+                })
+                .catch((error) => {
+                    Swal.fire(
+                            'Error',
+                            'Hubo un error, intenta despues.',
+                            'error'
+                        );
+                });
+
+        }
+
+        loading.value = false;
+
+    }
+
+
     async function denyTenantApplication(){
 
         const resultado = await Swal.fire({
@@ -896,7 +959,7 @@
     const filteredTenantApplications = computed(() => {
         currentPage.value = 1;
         return allTenantApplications.value.filter(app => {
-            const matchStatus = !sortByStatus.value || sortByStatus.value === 'Todas' || app.status === sortByStatus.value;
+            const matchStatus = !sortByStatus.value || sortByStatus.value === 'Todos' || app.status === sortByStatus.value;
             const matchProperty = !sortByInmueble.value || sortByInmueble.value === 'Todas' || app.property_id === sortByInmueble.value;
             return matchStatus && matchProperty;
         });

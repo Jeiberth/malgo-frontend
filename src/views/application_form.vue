@@ -496,8 +496,31 @@
     };
 
     const manejarArchivo = (event, objetivo, campo) => {
-        objetivo[campo] = event.target.files[0];
+
+        if (event.target.files[0].type == 'application/pdf') {
+
+            objetivo[campo] = event.target.files[0];
+            const inputElement = event.target;
+            if (event.target.files.length > 0) {
+                inputElement.classList.add('has-file');
+            } else {
+                inputElement.classList.remove('has-file');
+            }
+
+        }else{
+            Swal.fire({
+                icon: 'error',
+                title: 'Formato incorrecto',
+                text: 'Solo se permiten archivos PDF',
+                timer: 3000
+            });
+            objetivo[campo] = null;
+            event.target.value = '';
+        }
+
     };
+
+
 
 /*    const necesitaFiador = (responsable) => {
         if (!responsable.start_current_job_date) return false;
@@ -751,17 +774,40 @@
                     ParkingNeed: []
                 };
             } else {
+                let errorMsg = 'Error desconocido';
+
+                if (response?.errors) {
+                    const messages = Object.values(response.errors).flat();
+                    errorMsg = messages.join('\n');
+                } else if (response?.message) {
+                    errorMsg = response.message;
+                }
+
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Error al enviar la solicitud'
+                    text: errorMsg
                 });
             }
         }).catch((error) => {
+            let errorMsg = 'Error al enviar la solicitud';
+
+            if (error.response && error.response.data) {
+                if (typeof error.response.data === 'string') {
+                    errorMsg = error.response.data;
+                } else if (error.response.data.message) {
+                    errorMsg = error.response.data.message;
+                } else if (error.response.data.errors) {
+                    // Laravel validation errors
+                    const messages = Object.values(error.response.data.errors).flat();
+                    errorMsg = messages.join('\n');
+                }
+            }
+
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Error al enviar la solicitud'
+                text: errorMsg
             });
         });
 
@@ -897,6 +943,10 @@
     .ingreso{
         background-color: #ffffff !important;
         border-radius: 25px;
+    }
+
+    .entrada[type="file"].has-file {
+        border: 1px solid #8f754f !important;
     }
 
     .ingreso .campo .entrada {

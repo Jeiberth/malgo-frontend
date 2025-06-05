@@ -35,6 +35,14 @@ export default class tenantApplication {
         });
     }
 
+    deleteTenantApplication(data){
+        return axios({
+            url: '/tenant/application/delete',
+            method: 'put',
+            data: data,
+        });
+    }
+
     createTenantApplication(data){
         return axios({
             url: '/create/tenant/application',
